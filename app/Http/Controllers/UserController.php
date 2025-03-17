@@ -18,9 +18,7 @@ class UserController extends Controller
             'password' => Hash::make('12345')
         ];
         
-        $user = UserModel::findor(20, ['username', 'nama'], function() {
-            abort(404);
-        });
+        $user = UserModel::where('username', 'manager')->firstOrFail();
         return view('user', ['data' => $user]);
     }
 }
