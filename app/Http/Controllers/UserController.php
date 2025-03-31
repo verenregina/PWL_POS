@@ -23,7 +23,9 @@ class UserController extends Controller
 
         $activeMenu = 'user'; // Set menu yang sedang aktif
 
-        return view('user.index', compact('breadcrumb', 'page', 'activeMenu'));
+        $level = LevelModel::all(); //ambil data level untuk filter level
+
+        return view('user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
     }
 
     // Ambil data user dalam bentuk JSON untuk DataTables
@@ -31,6 +33,11 @@ class UserController extends Controller
     {
         $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
             ->with('level');
+
+            //filter data user berdasarkan level_id
+            if ($request->level_id) {
+                $users->where('level_id', $request->level_id);
+            }
 
         return DataTables::of($users)
             // Menambahkan kolom index / nomor urut (default nama kolom: DT_RowIndex)
@@ -164,7 +171,7 @@ class UserController extends Controller
 
             return redirect('/user')->with('success', 'Data user berhasil dihapus');
         } catch (\Illuminate\Database\QueryException $e) {
-            
+
             // Jika terjadi error ketika menghapus data, redirect kembali ke halaman dengan membawa pesan error
             return redirect('/user')->with('error', 'Data user gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
         }
