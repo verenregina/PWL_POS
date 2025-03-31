@@ -1,30 +1,70 @@
 <?php
 
-namespace App\Http\Controllers; 
+namespace App\Http\Controllers;
 
-use Illuminate\Http\Request; 
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Http\Request;
+use App\Models\Kategori;
+use Yajra\DataTables\DataTables;
 
-
-class KategoriController extends Controller 
+class KategoriController extends Controller
 {
-    public function index() 
-    { 
-       /* $data = [
-            'kategori_kode' => 'SNK',
-            'kategori_nama' => 'Snack/Makanan Ringan',
-            'created_at' => now()
+    public function index()
+    {
+        $page = (object) ['title' => 'Kategori'];
+        $breadcrumb = (object) [
+            'title' => 'Kategori',
+            'list' => ['Home', 'Kategori']
         ];
-        DB::table('m_kategori')->insert($data); 
-        return 'Insert data baru berhasil'; */
-
-        // $row = DB::table('m_kategori')->where('kategori_kode', 'SNK')->update(['kategori_nama' => 'Camilan']);
-        // return 'Update data berhasil. Jumlah data yang diupdate: ' . $row. ' baris';
-
-        // $row = DB::table('m_kategori')->where('kategori_kode', 'SNK')->delete();
-        // return 'Delete data berhasil. Jumlah data yang dihapus: ' .$row. ' baris';
-
-        $data = DB::table('m_kategori')->get();
-        return view('kategori', ['data' => $data]);
+        return view('kategori.index', compact('page', 'breadcrumb'));
     }
+    
+    public function create()
+    {
+        $page = (object) ['title' => 'Tambah Kategori'];
+        $breadcrumb = (object) [
+            'title' => 'Tambah Kategori',
+            'list' => ['Home', 'Kategori', 'Tambah']
+        ];
+        return view('kategori.create', compact('page', 'breadcrumb'));
+    }
+    
+    public function show($id)
+    {
+        $kategori = Kategori::findOrFail($id);
+        $page = (object) ['title' => 'Detail Kategori'];
+        $breadcrumb = (object) [
+            'title' => 'Detail Kategori',
+            'list' => ['Home', 'Kategori', 'Detail']
+        ];
+        return view('kategori.show', compact('kategori', 'page', 'breadcrumb'));
+    }
+
+    public function data()
+{
+    $query = Kategori::select('m_kategori.*'); // Sesuaikan dengan nama tabel di database
+
+    return DataTables::of($query)
+        ->addIndexColumn()
+        ->addColumn('aksi', function ($kategori) {
+            return '
+                <a href="'.route('kategori.show', $kategori->id).'" class="btn btn-info btn-sm">Detail</a>
+                <a href="'.route('kategori.edit', $kategori->id).'" class="btn btn-warning btn-sm">Edit</a>
+                <button class="btn btn-danger btn-sm" onclick="deleteKategori('.$kategori->id.')">Hapus</button>
+            ';
+        })
+        ->rawColumns(['aksi'])
+        ->make(true);
 }
+
+    
+    public function edit($id)
+    {
+        $kategori = Kategori::findOrFail($id);
+        $page = (object) ['title' => 'Edit Kategori'];
+        $breadcrumb = (object) [
+            'title' => 'Edit Kategori',
+            'list' => ['Home', 'Kategori', 'Edit']
+        ];
+        return view('kategori.edit', compact('kategori', 'page', 'breadcrumb'));
+    }
+}    
