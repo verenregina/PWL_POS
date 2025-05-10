@@ -20,7 +20,7 @@ Route::post('/register', [AuthController::class, 'store_user'])->name('register.
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [WelcomeController::class, 'index']);
 
-    Route::middleware(['authorize:ADM'])->prefix('user')->group(function (){
+    Route::middleware(['authorize:ADM'])->group(function (){
     //Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/list', [UserController::class, 'list']);
