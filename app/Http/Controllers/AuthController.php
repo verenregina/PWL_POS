@@ -50,7 +50,7 @@ use App\Models\LevelModel;
      public function register(){
         $level = LevelModel::select('level_id','level_nama')->get();
 
-        return View('auth.register')
+        return View('auth.registrasi')
         ->with('level', $level);
     }
 
