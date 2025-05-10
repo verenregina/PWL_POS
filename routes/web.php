@@ -20,7 +20,7 @@ Route::post('/register', [AuthController::class, 'store_user'])->name('register.
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [WelcomeController::class, 'index']);
 
-    Route::middleware(['authorize:ADM'])->group(function (){
+    Route::middleware(['authorize:ADM,MNG'])->prefix('user')->group(function (){
     //Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/list', [UserController::class, 'list']);
@@ -74,11 +74,10 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
     });
 
-    Route::middleware(['authorize:ADM,MNG'])->prefix('barang')->group(function (){
-    //Route::prefix('barang')->group(function () {
-        Route::get('/', [BarangController::class, 'index']);
-        Route::post('/list', [BarangController::class, 'list']);
-        Route::get('/create', [BarangController::class, 'create']);
+    Route::middleware(['authorize:ADM,MNG'])->prefix('barang')->name('barang.')->group(function () {
+        Route::get('/', [BarangController::class, 'index'])->name('index');
+        Route::get('/create', [BarangController::class, 'create'])->name('create'); // <--- PENTING
+        Route::post('/list', [BarangController::class, 'list'])->name('data'); // <--- PENTING
         Route::get('/create_ajax', [BarangController::class, 'create_ajax']);
         Route::post('/ajax', [BarangController::class, 'store_ajax']);
         Route::post('/', [BarangController::class, 'store']);
@@ -91,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']);
         Route::delete('/{id}', [BarangController::class, 'destroy']);
     });
+    
 
     Route::post('/logout', function () {
         Auth::logout();
