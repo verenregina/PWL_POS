@@ -227,4 +227,35 @@ class BarangController extends Controller
         }
         return redirect('/');
     }
+
+    public function export_excel()
+{
+    $barang = Barang::with('kategori')->get();
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $sheet->setCellValue('A1', 'Kode');
+    $sheet->setCellValue('B1', 'Nama');
+    $sheet->setCellValue('C1', 'Harga Beli');
+    $sheet->setCellValue('D1', 'Harga Jual');
+    $sheet->setCellValue('E1', 'Kategori');
+
+    $row = 2;
+    foreach ($barang as $b) {
+        $sheet->setCellValue("A{$row}", $b->barang_kode);
+        $sheet->setCellValue("B{$row}", $b->barang_nama);
+        $sheet->setCellValue("C{$row}", $b->harga_beli);
+        $sheet->setCellValue("D{$row}", $b->harga_jual);
+        $sheet->setCellValue("E{$row}", $b->kategori->kategori_nama ?? '-');
+        $row++;
+    }
+
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'export_barang.xlsx';
+    $temp_file = tempnam(sys_get_temp_dir(), $filename);
+    $writer->save($temp_file);
+
+    return response()->download($temp_file, $filename)->deleteFileAfterSend(true);
+}
+
 }
