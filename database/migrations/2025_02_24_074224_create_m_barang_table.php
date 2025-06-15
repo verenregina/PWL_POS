@@ -8,14 +8,15 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('m_barang', function (Blueprint $table) {
-            $table->string('barang_nama', 100)->after('barang_kode'); // Menambahkan kolom
+            $table->decimal('harga_beli', 12, 2)->after('barang_nama')->nullable();
+            $table->decimal('harga_jual', 12, 2)->after('harga_beli')->nullable();
         });
     }
 
     public function down(): void
     {
         Schema::table('m_barang', function (Blueprint $table) {
-            $table->dropColumn('barang_nama'); // Menghapus kolom jika rollback
+            $table->dropColumn(['harga_beli', 'harga_jual']);
         });
     }
 };
